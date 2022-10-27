@@ -18,11 +18,14 @@ public class MlRestApiController {
     MlRestApiService mlRestApiService;
 
     @RequestMapping(value = "Start", method = RequestMethod.GET)
-    public void executor(@RequestParam(value = "test")String test)throws InterruptedException{
+    public void executor(@RequestParam(value = "model")String model)throws InterruptedException{
         log.debug("start");
-        mlRestApiService.pyStart(test);
-        System.out.println(test);
+/*        String [] parameter = new String[6];
+        mlRestApiService.pyStart(parameter);
+        System.out.println(parameter);*/
 
+        mlRestApiService.pyStart(model);
+        System.out.println(model);
     }
 
     @RequestMapping(value = "End", method = RequestMethod.GET)
@@ -30,6 +33,5 @@ public class MlRestApiController {
         log.debug("start");
         mlRestApiService.pyStop(test);
         System.out.println(test);
-
     }
 }
