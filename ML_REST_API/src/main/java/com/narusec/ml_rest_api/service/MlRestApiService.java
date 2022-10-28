@@ -35,12 +35,12 @@ public class MlRestApiService {
             Object obj = jsonParser.parse()*/
             String[] command = new String[8];
             command[0] = "ssh conse@192.168.103.70 python3 /app/ad/train.py";
-            command[1] = "-m " + parStrings[0];
-            command[2] = "-s " + parStrings[1];
-            command[3] = "-e " + parStrings[2];
-            command[4] = "-p " + parStrings[3];
-            command[5] = "-c " + parStrings[4];
-            command[6] = "-r " + parStrings[5];
+            command[1] = "-m \'" + parStrings[0]+"\'";
+            command[2] = "-s \'" + parStrings[1]+"\'";
+            command[3] = "-e \'" + parStrings[2]+"\'";
+            command[4] = "-p \'" + parStrings[3]+"\'";
+            command[5] = "-c \'" + parStrings[4]+"\'";
+            command[6] = "-r \'" + parStrings[5]+"\'";
             Thread thread = new Thread(new Runnable()  {
                 @Override
                 public void run()  {
@@ -71,7 +71,7 @@ public class MlRestApiService {
         try {
             CommandLine commandLine = CommandLine.parse(command[0]);
             for (int i = 1, n = command.length; i < n; i++) {
-                commandLine.addArgument(command[i]);
+                commandLine.addArgument(command[i],false);
             }
 
             DefaultExecutor executor = new DefaultExecutor();

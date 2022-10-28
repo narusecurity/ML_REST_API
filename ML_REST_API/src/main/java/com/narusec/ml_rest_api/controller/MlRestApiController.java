@@ -51,8 +51,8 @@ public class MlRestApiController {
         requestParam.put("s",date); //2022-10-22
         requestParam.put("e","2022-10-24");
         requestParam.put("p","1");
-        requestParam.put("c","{'l7':true}");
-        requestParam.put("r","{'bandwith':2}");
+        requestParam.put("c","{\"l7\":true}");
+        requestParam.put("r","{\"bandwith\":2}");
         String json = new ObjectMapper().writeValueAsString(requestParam);
         sendREST("http://localhost:8088/Start/",json);
     }
