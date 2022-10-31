@@ -1,6 +1,8 @@
 package com.narusec.ml_rest_api.service;
 
 
+import com.narusec.ml_rest_api.entity.ModelInfoEntity;
+import com.narusec.ml_rest_api.repository.ModelInfoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -8,6 +10,8 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,6 +25,13 @@ public class MlRestApiService {
 
     private ArrayList<Thread> threads = new ArrayList<>();
 
+    private String[] pythonPM = new String[]{"-m ","-s ","-e ","-p ","-c ","-r "};
+
+    private String[] command = new String[9];
+
+    @Autowired
+    private ModelInfoRepository modelInfoRepository;
+
 
     MlRestApiService(){
 
@@ -29,28 +40,27 @@ public class MlRestApiService {
     public void pyStart(String parStrings[]){
         try{
             log.debug("Start");
-//            String[] command = new String[3];
-//            command[0] = "ssh conse@192.168.103.70 python3 /app/ad/train.py -m 'ST-MODEL1' -s '2022-10-22' -e '2022-10-24' -p 1 -c '{\"l7\":true}' -r '{\"bandwith\":2}'";
-            /*JSONParser jsonParser = new JSONParser();
-            Object obj = jsonParser.parse()*/
-            String[] command = new String[8];
             command[0] = "ssh conse@192.168.103.70 python3 /app/ad/train.py";
-            command[1] = "-m \'" + parStrings[0]+"\'";
-            command[2] = "-s \'" + parStrings[1]+"\'";
-            command[3] = "-e \'" + parStrings[2]+"\'";
-            command[4] = "-p \'" + parStrings[3]+"\'";
-            command[5] = "-c \'" + parStrings[4]+"\'";
-            command[6] = "-r \'" + parStrings[5]+"\'";
+            for(int i = 0 ; i<pythonPM.length;i++) {
+                if (!parStrings[i].equals("")) {
+                    command[i + 1] = pythonPM[i] + "\'" + parStrings[i] + "\'";
+                }
+            }
+
             Thread thread = new Thread(new Runnable()  {
                 @Override
                 public void run()  {
                     excPython(command);
+                    while(true){
+
+                    }
                  }
             });
             thread.setName(parStrings[1]);
             thread.start();
 
             threads.add(thread);
+            removeThread(threads);
 
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -63,8 +73,12 @@ public class MlRestApiService {
         for (int i = 0 ; i<threads.size();i++){
             if(threads.get(i).getName().equals(test)){
                 threads.get(i).interrupt();
+
+                //중단 코드 작성 필요
+                stopThread(test);
             }
         }
+
     }
 
     private void excPython(String[] command) {
@@ -84,5 +98,20 @@ public class MlRestApiService {
         }
     }
 
+    private void removeThread(ArrayList<Thread> threads){
+        for(int i = 0 ; i <threads.size();i++) {
+            System.out.println(i +"번째 쓰레드:"+threads.get(i).getState().toString()+ " 상태 :"+ threads.get(i).isAlive());
+            if(threads.get(i).isAlive()==false){
+                threads.remove(i);
+                i=0;
+            }
+            System.out.println(i +"번째 쓰레드:"+threads.get(i).getState().toString()+ " 상태 :"+ threads.get(i).isAlive());
+        }
+    }
 
+    private void stopThread(String model_id){
+        ModelInfoEntity modelInfoEntity = modelInfoRepository.findByModelId(Integer.valueOf(model_id));
+        modelInfoEntity.setStatus("중단");
+        modelInfoRepository.save(modelInfoEntity);
+    }
 }

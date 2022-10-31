@@ -21,7 +21,7 @@ public class MlRestApiController {
     @Autowired
     MlRestApiService mlRestApiService;
 
-    @RequestMapping(value = "Start", method = RequestMethod.POST)
+    @RequestMapping(value = "MLRESTAPISTART", method = RequestMethod.POST)
     public void executor(@RequestBody Map<String, Object> map)throws InterruptedException{
         log.debug("start");
         String [] parameter = new String[6];
@@ -36,28 +36,30 @@ public class MlRestApiController {
         System.out.println(parameter[0]);
     }
 
-    @RequestMapping(value = "End", method = RequestMethod.GET)
+    @RequestMapping(value = "MLRESTAPISTOP", method = RequestMethod.GET)
     public void stop(@RequestParam(value = "test")String test)throws InterruptedException{
         log.debug("start");
         mlRestApiService.pyStop(test);
         System.out.println(test);
     }
 
-    @RequestMapping(value = "TEST", method = RequestMethod.GET)
-    public void executor(@RequestParam(value = "date")String date)throws Exception{
-        log.debug("Date");
+    @RequestMapping(value = "TEST", method = RequestMethod.GET)  //데이터 받는 부분
+    public void executor()throws Exception{
         Map<String,Object> requestParam = new HashMap<>();
-        requestParam.put("m","ST-MODEL1");
-        requestParam.put("s",date); //2022-10-22
-        requestParam.put("e","2022-10-24");
-        requestParam.put("p","1");
-        requestParam.put("c","{\"l7\":true}");
-        requestParam.put("r","{\"bandwith\":2}");
+        requestParam.put("m","ST-MODEL2");  //모델이름
+        requestParam.put("s","2022-10-22"); //2022-10-22  //시작 날짜
+        requestParam.put("e","2022-10-27"); //끝나는 날짜
+        requestParam.put("p","");  //주기
+        requestParam.put("c",""); //전처리 관련 파라미터
+        requestParam.put("r",""); //모델 관련 파라미터
+        /*        requestParam.put("c","{\"l7\":true}"); //전처리 관련 파라미터
+        requestParam.put("r","{\"bandwith\":2}"); //모델 관련 파라미터*/
+        //이름 추가 필요
         String json = new ObjectMapper().writeValueAsString(requestParam);
-        sendREST("http://localhost:8088/Start/",json);
+        sendREST("http://localhost:8088/MLRESTAPISTART/",json);
     }
 
-    public static void sendREST(String sendUrl, String jsonValue) throws IllegalStateException {
+    public static void sendREST(String sendUrl, String jsonValue) throws IllegalStateException {  //json 형식으로 변환 하여 POST로 데이터 날리는 부분
         try{
             log.debug("REST API Start");
             URL url = new URL(sendUrl);
