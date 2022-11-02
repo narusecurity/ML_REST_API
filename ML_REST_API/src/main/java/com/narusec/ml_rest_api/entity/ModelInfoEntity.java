@@ -11,9 +11,8 @@ import java.sql.Timestamp;
 public class ModelInfoEntity {
 
     @Id
-    @GeneratedValue
-    @Column(name = "MODEL_ID")
-    private Integer modelId;
+    @Column(name = "SEQ")
+    private Integer seq;
 
     @Column(name = "MODEL_TYPE")
     private String modelType;

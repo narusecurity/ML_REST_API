@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -25,25 +27,22 @@ public class MlRestApiService {
 
     private ArrayList<Thread> threads = new ArrayList<>();
 
-    private String[] pythonPM = new String[]{"-m ","-s ","-e ","-p ","-c ","-r "};
+    private String[] pythonPM = new String[]{"-q ","-m ","-s ","-e ","-p ","-c ","-r "};
 
-    private String[] command = new String[9];
+    private List<String> command = new LinkedList<>();
 
     @Autowired
     private ModelInfoRepository modelInfoRepository;
 
 
-    MlRestApiService(){
-
-    }
-
     public void pyStart(String parStrings[]){
         try{
             log.debug("Start");
-            command[0] = "ssh conse@192.168.103.70 python3 /app/ad/train.py";
+            command = new LinkedList<>();
+            command.add("ssh conse@192.168.103.70 python3 /app/ad/train.py");
             for(int i = 0 ; i<pythonPM.length;i++) {
                 if (!parStrings[i].equals("")) {
-                    command[i + 1] = pythonPM[i] + "\'" + parStrings[i] + "\'";
+                    command.add(pythonPM[i] + "\'" + parStrings[i] + "\'");
                 }
             }
 
@@ -51,12 +50,9 @@ public class MlRestApiService {
                 @Override
                 public void run()  {
                     excPython(command);
-                    while(true){
-
-                    }
                  }
             });
-            thread.setName(parStrings[1]);
+            thread.setName(parStrings[0]);
             thread.start();
 
             threads.add(thread);
@@ -69,23 +65,24 @@ public class MlRestApiService {
 
     }
 
-    public void pyStop(String test){
+    public void pyStop(String seq){
         for (int i = 0 ; i<threads.size();i++){
-            if(threads.get(i).getName().equals(test)){
+            if(threads.get(i).getName().equals(seq)){
                 threads.get(i).interrupt();
 
                 //중단 코드 작성 필요
-                stopThread(test);
+                stopThread(seq);
+                threads.remove(i);
             }
         }
 
     }
 
-    private void excPython(String[] command) {
+    private void excPython(List<String> command) {
         try {
-            CommandLine commandLine = CommandLine.parse(command[0]);
-            for (int i = 1, n = command.length; i < n; i++) {
-                commandLine.addArgument(command[i],false);
+            CommandLine commandLine = CommandLine.parse(command.get(0));
+            for (int i = 1, n = command.size(); i < n; i++) {
+                commandLine.addArgument(command.get(i),false);
             }
 
             DefaultExecutor executor = new DefaultExecutor();
@@ -110,7 +107,7 @@ public class MlRestApiService {
     }
 
     private void stopThread(String model_id){
-        ModelInfoEntity modelInfoEntity = modelInfoRepository.findByModelId(Integer.valueOf(model_id));
+        ModelInfoEntity modelInfoEntity = modelInfoRepository.findBySeq(Integer.valueOf(model_id));
         modelInfoEntity.setStatus("중단");
         modelInfoRepository.save(modelInfoEntity);
     }

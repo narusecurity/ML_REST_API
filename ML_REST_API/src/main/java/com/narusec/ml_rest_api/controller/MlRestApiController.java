@@ -24,23 +24,24 @@ public class MlRestApiController {
     @RequestMapping(value = "MLRESTAPISTART", method = RequestMethod.POST)
     public void executor(@RequestBody Map<String, Object> map)throws InterruptedException{
         log.debug("start");
-        String [] parameter = new String[6];
-        parameter[0] = map.get("m").toString();
-        parameter[1] = map.get("s").toString();
-        parameter[2] = map.get("e").toString();
-        parameter[3] = map.get("p").toString();
-        parameter[4] = map.get("c").toString();
-        parameter[5] = map.get("r").toString();
+        String [] parameter = new String[7];
+        parameter[0] = map.get("seq").toString();
+        parameter[1] = map.get("m").toString();
+        parameter[2] = map.get("s").toString();
+        parameter[3] = map.get("e").toString();
+        parameter[4] = map.get("p").toString();
+        parameter[5] = map.get("c").toString();
+        parameter[6] = map.get("r").toString();
+
         mlRestApiService.pyStart(parameter);
         System.out.println(parameter);
-        System.out.println(parameter[0]);
     }
 
     @RequestMapping(value = "MLRESTAPISTOP", method = RequestMethod.GET)
-    public void stop(@RequestParam(value = "test")String test)throws InterruptedException{
+    public void stop(@RequestParam(value = "seq")String seq)throws InterruptedException{
         log.debug("start");
-        mlRestApiService.pyStop(test);
-        System.out.println(test);
+        mlRestApiService.pyStop(seq);
+        System.out.println(seq);
     }
 
     @RequestMapping(value = "TEST", method = RequestMethod.GET)  //데이터 받는 부분
@@ -52,6 +53,7 @@ public class MlRestApiController {
         requestParam.put("p","");  //주기
         requestParam.put("c",""); //전처리 관련 파라미터
         requestParam.put("r",""); //모델 관련 파라미터
+        requestParam.put("seq","17");
         /*        requestParam.put("c","{\"l7\":true}"); //전처리 관련 파라미터
         requestParam.put("r","{\"bandwith\":2}"); //모델 관련 파라미터*/
         //이름 추가 필요

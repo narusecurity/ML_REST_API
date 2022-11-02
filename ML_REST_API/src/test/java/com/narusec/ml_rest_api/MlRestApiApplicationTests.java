@@ -24,7 +24,7 @@ class MlRestApiApplicationTests {
     @Disabled
     @Test
     void testDB(){
-        ModelInfoEntity modelInfoEntity = modelInfoRepository.findByModelId(178);
+        ModelInfoEntity modelInfoEntity = modelInfoRepository.findBySeq(178);
         System.out.println(modelInfoEntity.toString());
     }
 

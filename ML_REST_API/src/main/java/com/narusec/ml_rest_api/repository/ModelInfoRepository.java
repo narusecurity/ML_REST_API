@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ModelInfoRepository extends JpaRepository<ModelInfoEntity,Integer> {
-    ModelInfoEntity findByModelId(Integer id); // 값 필요
+    ModelInfoEntity findBySeq(Integer id); // 값 필요
 }
