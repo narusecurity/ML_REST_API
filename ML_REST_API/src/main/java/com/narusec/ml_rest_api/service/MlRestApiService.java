@@ -27,7 +27,7 @@ public class MlRestApiService {
 
     private ArrayList<Thread> threads = new ArrayList<>();
 
-    private String[] pythonPM = new String[]{"-q ","-m ","-s ","-e ","-p ","-c ","-r "};
+    private String[] pythonPM = new String[]{"-q ","-m","-s","-e","-p ","-c ","-r "};
 
     private List<String> command = new LinkedList<>();
 
@@ -39,10 +39,11 @@ public class MlRestApiService {
         try{
             log.debug("Start");
             command = new LinkedList<>();
-            command.add("ssh conse@192.168.103.70 python3 /app/ad/train.py");
+//            command.add("ssh conse@192.168.103.70 python3 /app/ad/train.py");  // 테스트시 사용
+            command.add("python3 /app/ad/train.py");
             for(int i = 0 ; i<pythonPM.length;i++) {
                 if (!parStrings[i].equals("")) {
-                    command.add(pythonPM[i] + "\'" + parStrings[i] + "\'");
+                        command.add(pythonPM[i] + parStrings[i]);
                 }
             }
 

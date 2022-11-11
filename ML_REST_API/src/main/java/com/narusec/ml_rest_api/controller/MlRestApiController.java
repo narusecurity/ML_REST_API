@@ -47,15 +47,17 @@ public class MlRestApiController {
     @RequestMapping(value = "TEST", method = RequestMethod.GET)  //데이터 받는 부분
     public void executor()throws Exception{
         Map<String,Object> requestParam = new HashMap<>();
-        requestParam.put("m","ST-MODEL2");  //모델이름
+        requestParam.put("m","ST-MODEL1");  //모델이름
         requestParam.put("s","2022-10-22"); //2022-10-22  //시작 날짜
         requestParam.put("e","2022-10-27"); //끝나는 날짜
-        requestParam.put("p","");  //주기
+        requestParam.put("p","1");  //주기
+/*
         requestParam.put("c",""); //전처리 관련 파라미터
         requestParam.put("r",""); //모델 관련 파라미터
-        requestParam.put("seq","17");
-        /*        requestParam.put("c","{\"l7\":true}"); //전처리 관련 파라미터
-        requestParam.put("r","{\"bandwith\":2}"); //모델 관련 파라미터*/
+*/
+        requestParam.put("seq","1231");
+                requestParam.put("c","{\"l7\":true}"); //전처리 관련 파라미터
+        requestParam.put("r","{\"bandwith\":2}"); //모델 관련 파라미터
         //이름 추가 필요
         String json = new ObjectMapper().writeValueAsString(requestParam);
         sendREST("http://localhost:8088/MLRESTAPISTART/",json);
