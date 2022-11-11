@@ -7,13 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
-import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -111,5 +111,15 @@ public class MlRestApiService {
         ModelInfoEntity modelInfoEntity = modelInfoRepository.findBySeq(Integer.valueOf(model_id));
         modelInfoEntity.setStatus("중단");
         modelInfoRepository.save(modelInfoEntity);
+    }
+
+    public String pythonResponse(String date) throws Exception{
+        java.io.ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        CommandLine commandline = CommandLine.parse("python3 /app/ad/get_model_data.py -m " + Integer.valueOf(date));
+        DefaultExecutor exec = new DefaultExecutor();
+        PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
+        exec.setStreamHandler(streamHandler);
+        exec.execute(commandline);
+        return outputStream.toString();
     }
 }

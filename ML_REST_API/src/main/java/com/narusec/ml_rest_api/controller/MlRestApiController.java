@@ -37,11 +37,18 @@ public class MlRestApiController {
         System.out.println(parameter);
     }
 
-    @RequestMapping(value = "MLRESTAPISTOP", method = RequestMethod.GET)
+    @RequestMapping(value = "MLRESTAPISTOP", method = RequestMethod.POST)
     public void stop(@RequestParam(value = "seq")String seq)throws InterruptedException{
         log.debug("start");
         mlRestApiService.pyStop(seq);
         System.out.println(seq);
+    }
+
+    @RequestMapping(value = "MLRESPONSE",method = RequestMethod.POST)
+    @ResponseBody
+    public String responseApi(@RequestParam(value = "date")String date) throws Exception{
+        log.debug("responseApiStart");
+        return mlRestApiService.pythonResponse("11081227");
     }
 
     @RequestMapping(value = "TEST", method = RequestMethod.GET)  //데이터 받는 부분
