@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -35,15 +36,16 @@ public class MlRestApiService {
     private ModelInfoRepository modelInfoRepository;
 
 
-    public void pyStart(String parStrings[]){
+    public void pyStart(Map<String,Object> parStrings){
         try{
             log.debug("Start");
             command = new LinkedList<>();
 //            command.add("ssh conse@192.168.103.70 python3 /app/ad/train.py");  // 테스트시 사용
             command.add("python3 /app/ad/train.py");
             for(int i = 0 ; i<pythonPM.length;i++) {
-                if (!parStrings[i].equals("")) {
-                        command.add(pythonPM[i] + parStrings[i]);
+                if (!parStrings.get(pythonPM[i]).equals("\"\"")&&!parStrings.get(pythonPM[i]).equals("")) {
+                        command.add(pythonPM[i]);
+                        command.add(parStrings.get(pythonPM[i]).toString());
                 }
             }
 
@@ -53,7 +55,7 @@ public class MlRestApiService {
                     excPython(command);
                  }
             });
-            thread.setName(parStrings[0]);
+            thread.setName(parStrings.get("-q ").toString());
             thread.start();
 
             threads.add(thread);
@@ -113,9 +115,9 @@ public class MlRestApiService {
         modelInfoRepository.save(modelInfoEntity);
     }
 
-    public String pythonResponse(String date) throws Exception{
+    public String pythonResponse(String seq) throws Exception{
         java.io.ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        CommandLine commandline = CommandLine.parse("python3 /app/ad/get_model_data.py -m " + Integer.valueOf(date));
+        CommandLine commandline = CommandLine.parse("python3 /app/ad/get_model_data.py -m " + Integer.valueOf(seq));
         DefaultExecutor exec = new DefaultExecutor();
         PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
         exec.setStreamHandler(streamHandler);

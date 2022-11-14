@@ -22,51 +22,85 @@ public class MlRestApiController {
     MlRestApiService mlRestApiService;
 
     @RequestMapping(value = "MLRESTAPISTART", method = RequestMethod.POST)
-    public void executor(@RequestBody Map<String, Object> map)throws InterruptedException{
+    public void executor(@RequestBody Map<String, Object> map)throws Exception{
+        System.out.println(map);
         log.debug("start");
+/*
         String [] parameter = new String[7];
+
         parameter[0] = map.get("seq").toString();
         parameter[1] = map.get("m").toString();
         parameter[2] = map.get("s").toString();
         parameter[3] = map.get("e").toString();
         parameter[4] = map.get("p").toString();
+*/
+
+        Map<String,Object> jsonParam = new HashMap<>();
+        jsonParam.put("-q ",map.get("seq").toString());
+        jsonParam.put("-m",map.get("m").toString());
+        jsonParam.put("-s",map.get("s").toString());
+        jsonParam.put("-e",map.get("e").toString());
+        jsonParam.put("-p ",map.get("p").toString());
+        jsonParam.put("-c ",new ObjectMapper().writeValueAsString(map.get("c")));
+        jsonParam.put("-r ",new ObjectMapper().writeValueAsString(map.get("r")));
+/*
         parameter[5] = map.get("c").toString();
         parameter[6] = map.get("r").toString();
+*/
 
-        mlRestApiService.pyStart(parameter);
-        System.out.println(parameter);
+        mlRestApiService.pyStart(jsonParam);
+        System.out.println(jsonParam.toString());
     }
 
     @RequestMapping(value = "MLRESTAPISTOP", method = RequestMethod.POST)
-    public void stop(@RequestParam(value = "seq")String seq)throws InterruptedException{
+    public void stop(@RequestBody Map<String, Object> map)throws InterruptedException{
         log.debug("start");
-        mlRestApiService.pyStop(seq);
-        System.out.println(seq);
+        mlRestApiService.pyStop(map.get("seq").toString());
+        System.out.println(map.get("seq"));
     }
 
-    @RequestMapping(value = "MLRESPONSE",method = RequestMethod.POST)
+    @RequestMapping(value = "MLRESPONSE",method = RequestMethod.GET)
     @ResponseBody
-    public String responseApi(@RequestParam(value = "date")String date) throws Exception{
+    public String responseApi(@RequestParam(value = "seq")String seq) throws Exception{
         log.debug("responseApiStart");
-        return mlRestApiService.pythonResponse("11081227");
+
+        return mlRestApiService.pythonResponse(seq);
     }
 
+    @RequestMapping(value = "STOPTEST", method = RequestMethod.GET)  //데이터 받는 부분
+    public void stopTest(@RequestParam(value = "seq")String seq)throws Exception {
+        Map<String,Object> requestParam = new HashMap<>();
+
+        requestParam.put("seq",seq);  //모델이름
+
+        String json = new ObjectMapper().writeValueAsString(requestParam);
+        System.out.println(json);
+        sendREST("http://localhost:8088/MLRESTAPISTOP/",json);
+    }
     @RequestMapping(value = "TEST", method = RequestMethod.GET)  //데이터 받는 부분
     public void executor()throws Exception{
         Map<String,Object> requestParam = new HashMap<>();
+        Map<String,Object> map1 = new HashMap<>();
+        Map<String,Object> map2 = new HashMap<>();
+
+        String a = "l7";
+        String b = "bandwith";
+
+        map1.put(a,true);
+        map2.put(b,2);
+
         requestParam.put("m","ST-MODEL1");  //모델이름
         requestParam.put("s","2022-10-22"); //2022-10-22  //시작 날짜
         requestParam.put("e","2022-10-27"); //끝나는 날짜
-        requestParam.put("p","1");  //주기
-/*
+        requestParam.put("p","");  //주기
+        requestParam.put("seq","1231231");
         requestParam.put("c",""); //전처리 관련 파라미터
         requestParam.put("r",""); //모델 관련 파라미터
-*/
-        requestParam.put("seq","1231");
-                requestParam.put("c","{\"l7\":true}"); //전처리 관련 파라미터
-        requestParam.put("r","{\"bandwith\":2}"); //모델 관련 파라미터
+//        requestParam.put("c",map1); //전처리 관련 파라미터
+//        requestParam.put("r",map2); //모델 관련 파라미터
         //이름 추가 필요
         String json = new ObjectMapper().writeValueAsString(requestParam);
+        System.out.println(json);
         sendREST("http://localhost:8088/MLRESTAPISTART/",json);
     }
 
