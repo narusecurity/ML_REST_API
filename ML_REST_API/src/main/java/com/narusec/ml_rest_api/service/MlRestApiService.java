@@ -117,7 +117,7 @@ public class MlRestApiService {
 
     public String pythonResponse(String seq) throws Exception{
         java.io.ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        CommandLine commandline = CommandLine.parse("python3 /app/ad/get_model_data.py -m " + Integer.valueOf(seq));
+        CommandLine commandline = CommandLine.parse("python3 /app/ad/api/get_model_data.py -m " + Integer.valueOf(seq));
         DefaultExecutor exec = new DefaultExecutor();
         PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
         exec.setStreamHandler(streamHandler);
